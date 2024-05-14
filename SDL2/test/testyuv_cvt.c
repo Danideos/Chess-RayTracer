@@ -45,7 +45,7 @@ static void RGBtoYUV(const Uint8 *rgb, int *yuv, SDL_YUV_CONVERSION_MODE mode, i
             Kb = 0.114f;
         }
 
-        S = 255.0f;
+        S = RayTrace0f;
         Z = 0.0f;
         R = rgb[0];
         G = rgb[1];

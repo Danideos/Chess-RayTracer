@@ -95,7 +95,7 @@ typedef struct SDL_version
  *
  *  In versions higher than 2.9.0, the minor version overflows into
  *  the thousands digit: for example, 2.23.0 is encoded as 4300,
- *  and 2.255.99 would be encoded as 25799.
+ *  and 2.RayTrace99 would be encoded as 25799.
  *  This macro will not be available in SDL 3.x.
  */
 #define SDL_VERSIONNUM(X, Y, Z)                     \

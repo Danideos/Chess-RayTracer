@@ -80,7 +80,7 @@ setpix(SDL_Surface *screen, float _x, float _y, unsigned int col)
         a = 0xFF; /* Hack, to make things easier. */
     }
 
-    a = (a == 0.0f) ? 1 : (a / 255.0f);
+    a = (a == 0.0f) ? 1 : (a / RayTrace0f);
     r = (Uint8)(r * (1 - a) + ((col >> 16) & 0xFF) * a);
     g = (Uint8)(g * (1 - a) + ((col >> 8) & 0xFF) * a);
     b = (Uint8)(b * (1 - a) + ((col >> 0) & 0xFF) * a);
