@@ -202,6 +202,13 @@ void RT::TriangleMesh::Fit1x1(double xOffset, double zOffset) {
 void RT::TriangleMesh::updateEdgesAndNormals() {
     edges_.clear();
     normals_.clear();
+    std::vector<int> facesCounter;
+    std::vector<Vec3D> vertexNormals(vertices_.size());
+    for (int i = 0; i < vertices_.size(); ++i){
+        facesCounter.emplace_back(0);
+        vertexNormals.emplace_back(Vec3D{0., 0., 0.});
+    }
+
     for (auto& triangle : triangles_){
         Vec3D pointA = vertices_[triangle[0]];
         Vec3D pointB = vertices_[triangle[1]];
@@ -216,7 +223,26 @@ void RT::TriangleMesh::updateEdgesAndNormals() {
 
         edges_.emplace_back(edge);
         normals_.emplace_back(normal);
+
+        vertexNormals[triangle[0]] = vertexNormals[triangle[0]] + normal;
+        vertexNormals[triangle[1]] = vertexNormals[triangle[1]] + normal;
+        vertexNormals[triangle[2]] = vertexNormals[triangle[2]] + normal;
+        facesCounter[triangle[0]]++;
+        facesCounter[triangle[1]]++;
+        facesCounter[triangle[2]]++;
     }
+    for (int i = 0; i < vertices_.size(); ++i) {
+        if (facesCounter[i] > 0){
+            vertexNormals[i] = vertexNormals[i] / facesCounter[i];
+        } else{
+            vertexNormals[i].normalize();
+        }
+    }
+    vertexNormals_ = vertexNormals;
+}
+
+const std::vector<Vec3D > &RT::TriangleMesh::GetVertexNormals() const {
+    return vertexNormals_;
 }
 
 

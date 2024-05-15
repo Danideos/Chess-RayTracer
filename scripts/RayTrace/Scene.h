@@ -39,7 +39,7 @@ namespace RT{
         void SetPixelColor(size_t x, size_t y, Vec3D &pixelColor);
         Vec3D ConvertToRGB(const Vec3D &color);
 
-        Vec3D CastRay(RT::Ray &ray);
+        Vec3D PerPixel(RT::Ray &ray);
         bool RayTrace(double &u, double& v, double &hitDist, Vec3D &hitNormal, std::shared_ptr<RT::Object> &pObject,
                       RT::Ray &ray);
 

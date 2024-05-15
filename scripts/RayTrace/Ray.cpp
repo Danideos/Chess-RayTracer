@@ -41,12 +41,14 @@ void RT::Ray::SetDirection(Vec3D &direction) {
     direction_ = direction.normalized();
 }
 
-RT::Payload RT::Ray::RayIntersect(std::shared_ptr<RT::Object> pObject) {
+RT::HitPayload RT::Ray::RayIntersect(std::shared_ptr<RT::Object> pObject) {
     RT::ObjectType objType = pObject->GetType();
     if (objType == RT::ObjectType::TRIANGLE){
         RT::Triangle* pTriangle = static_cast<RT::Triangle*>(pObject.get());
+        Vec3D triangleNormal = pTriangle->GetNormal();
         return RayTriangleIntersect(pTriangle->GetPointA(), pTriangle->GetPointB(), pTriangle->GetPointC(),
-                                    pTriangle->GetEdgeAB(), pTriangle->GetEdgeAC(), pTriangle->GetNormal());
+                                    pTriangle->GetEdgeAB(), pTriangle->GetEdgeAC(),
+                                    triangleNormal, triangleNormal, triangleNormal);
     } else if (objType == RT::ObjectType::TRIANGLE_MESH){
         RT::TriangleMesh* pTriangleMesh = static_cast<RT::TriangleMesh*>(pObject.get());
         return RayTriangleMeshIntersect(pTriangleMesh);
@@ -55,17 +57,27 @@ RT::Payload RT::Ray::RayIntersect(std::shared_ptr<RT::Object> pObject) {
     }
 }
 
-RT::Payload RT::Ray::RayTriangleMeshIntersect(RT::TriangleMesh *pTriangleMesh) {
-    RT::Payload closestPayload;
+RT::HitPayload RT::Ray::RayTriangleMeshIntersect(RT::TriangleMesh *pTriangleMesh) {
+    RT::HitPayload closestPayload;
 
     const auto& pVertices = pTriangleMesh->GetVertices();
     const auto& pEdges = pTriangleMesh->GetEdges();
     const auto& pTriangles = pTriangleMesh->GetTriangles();
+    const auto& pVertexNormals = pTriangleMesh->GetVertexNormals();
     const auto& pNormals = pTriangleMesh->GetNormals();
+
     size_t i = 0;
     for (const auto& triangle : pTriangles){
-        RT::Payload payload = RayTriangleIntersect(pVertices[triangle[0]], pVertices[triangle[1]],pVertices[triangle[2]],
-                                                   pEdges[i].first, pEdges[i].second, pNormals[i]);
+#ifdef __SMOOTHING__
+        RT::HitPayload payload = RayTriangleIntersect(pVertices[triangle[0]], pVertices[triangle[1]],pVertices[triangle[2]],
+                                                   pEdges[i].first, pEdges[i].second,
+                                                   pVertexNormals[triangle[0]], pVertexNormals[triangle[1]], pVertexNormals[triangle[2]]);
+#else
+        auto normal = pNormals[i];
+        RT::HitPayload payload = RayTriangleIntersect(pVertices[triangle[0]], pVertices[triangle[1]],pVertices[triangle[2]],
+                                                   pEdges[i].first, pEdges[i].second,
+                                                   normal, normal, normal);
+#endif
         if (payload.hitDist < closestPayload.hitDist){
             closestPayload = payload;
         }
@@ -74,16 +86,16 @@ RT::Payload RT::Ray::RayTriangleMeshIntersect(RT::TriangleMesh *pTriangleMesh) {
     return closestPayload;
 }
 
-RT::Payload RT::Ray::RayTriangleIntersect(const Vec3D &pointA, const Vec3D &pointB, const Vec3D &pointC,
-                                          const Vec3D &edgeAB, const Vec3D &edgeAC, const Vec3D &hitNormal) {
-    RT::Payload payload;
-
+RT::HitPayload RT::Ray::RayTriangleIntersect(const Vec3D &pointA, const Vec3D &pointB, const Vec3D &pointC,
+                                          const Vec3D &edgeAB, const Vec3D &edgeAC,
+                                          const Vec3D &hitNormal1, const Vec3D &hitNormal2, const Vec3D &hitNormal3) {
+    RT::HitPayload payload;
     Vec3D pVec = cross(direction_, edgeAC);
     double det = edgeAB.dot(pVec);
     if (abs(det) < Utils::PARALLEL_PRECISION) return payload;
 
     double invDet = 1 / det;
-    Vec3D tVec = screenPoint_ - pointA;
+    Vec3D tVec = startPoint_ - pointA;
 
     payload.u = tVec.dot(pVec) * invDet;
     if (payload.u < 0 || payload.u > 1) return payload;
@@ -95,7 +107,33 @@ RT::Payload RT::Ray::RayTriangleIntersect(const Vec3D &pointA, const Vec3D &poin
     double hitDist = edgeAC.dot(qVec) * invDet;
     if (hitDist < 0) return payload;
     payload.hitDist = hitDist;
-    payload.hitNormal = hitNormal;
+    payload.hitNormal = (1 - payload.u - payload.v) * hitNormal1 + payload.u * hitNormal2 + payload.v * hitNormal3;
+
+//    RT::HitPayload payload;
+//    Vec3D N = edgeAB.cross(edgeAC);
+//    double NdotRayDirection = N.dot(direction_);
+//    if (abs(NdotRayDirection) < Utils::PARALLEL_PRECISION) return payload;
+//
+//    double d = -N.dot(pointA);
+//    double hitDist = -(N.dot(startPoint_) + d) / NdotRayDirection;
+//    if (hitDist < 0) return payload;
+//
+//    Vec3D C;
+//    Vec3D hitPoint = startPoint_ + hitDist * direction_;
+//    C = edgeAB.cross(hitPoint - pointA);
+//    if (N.dot(C) < 0) return payload;
+//
+//    Vec3D edgeBC = pointC - pointB;
+//    C = edgeBC.cross(hitPoint - pointB);
+//    if (N.dot(C) < 0) return payload;
+//
+//    Vec3D edgeCA = pointA - pointC;
+//    C = edgeCA.cross(hitPoint - pointC);
+//    if (N.dot(C) < 0) return payload;
+//
+//    payload.hitDist = hitDist;
+//    payload.hitNormal = hitNormal1;
+
     return payload;
 }
 

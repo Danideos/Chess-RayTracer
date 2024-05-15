@@ -4,21 +4,25 @@
 RT::Scene::Scene() {
     // Load object from .obj file
     auto king = ObjLoader::loadTriangleMeshObj("king.obj");
-    Vec3D kingColor = Vec3D{1., 0., 1.};
-    king->SetColor(kingColor);
-    king->Fit1x1(0.95, .95);
-    king->SetCenter(Vec3D{2.5, 0., 2.5});
+    king->SetColor(Utils::WHITE_PIECE_COLOR);
+    king->Fit1x1(0.8, 0.8);
+    king->SetCenter(Vec3D{2.5, 0., 5.5});
     pObjectList_.push_back(king);
 
+    auto queen = ObjLoader::loadTriangleMeshObj("queen.obj");
+    queen->SetColor(Utils::BLACK_PIECE_COLOR);
+    queen->Fit1x1(0.8, 0.8);
+    queen->SetCenter(Vec3D{5.5, 0., 2.5});
+    pObjectList_.push_back(queen);
+
     auto pawn1 = ObjLoader::loadTriangleMeshObj("pawn.obj");
-    Vec3D pawnColor = Vec3D{0., 1., 1.};
     pObjectList_.push_back(pawn1);
-    pawn1->SetColor(kingColor);
+    pawn1->SetColor(Utils::BLACK_PIECE_COLOR);
     pawn1->Fit1x1(0.6, 0.6);
     pawn1->SetCenter(Vec3D{0.5, 0., 2.5});
 
     auto pawn2 = ObjLoader::loadTriangleMeshObj("pawn.obj");
-    pawn2->SetColor(kingColor);
+    pawn2->SetColor(Utils::WHITE_PIECE_COLOR);
     pawn2->Fit1x1(0.6, 0.6);
     pawn2->SetCenter(Vec3D{4.5, 0., 4.5});
     pObjectList_.push_back(pawn2);
@@ -30,10 +34,14 @@ RT::Scene::Scene() {
         pObjectList_.push_back(pObj);
     }
 
-    auto plane = std::make_shared<RT::Triangle>(Vec3D{0., 0., 0.}, Vec3D{8., 0., 0.}, Vec3D{8., 8., 0.});
-    pObjectList_.push_back(plane);
-    auto plane2 = std::make_shared<RT::Triangle>(Vec3D{0., 8., 0.}, Vec3D{0., 0., 0.}, Vec3D{8., 8., 0.});
-    pObjectList_.push_back(plane2);
+//    auto plane = std::make_shared<RT::Triangle>(Vec3D{0., 0., 0.}, Vec3D{8., 0., 0.}, Vec3D{8., 8., 0.});
+//    pObjectList_.push_back(plane);
+//    auto plane2 = std::make_shared<RT::Triangle>(Vec3D{0., 8., 0.}, Vec3D{0., 0., 0.}, Vec3D{8., 8., 0.});
+//    pObjectList_.push_back(plane2);
+//    auto plane3 = std::make_shared<RT::Triangle>(Vec3D{0., 0., 0.}, Vec3D{0., 8., 0.}, Vec3D{0., 0., 8.});
+//    pObjectList_.push_back(plane3);
+//    auto plane4 = std::make_shared<RT::Triangle>(Vec3D{8., 8., 0.}, Vec3D{8., 0., 8.}, Vec3D{8., 0., 0.});
+//    pObjectList_.push_back(plane4);
 }
 
 void RT::Scene::Initialize(size_t width, size_t height, SDL_Renderer *pRend){
@@ -96,7 +104,7 @@ bool RT::Scene::Render() {
                 double yNorm = y * yFact - 0.5;
                 // Create and cast ray
                 RT::Ray ray = camera_.GetRay(xNorm, yNorm);
-                Vec3D pixelColor = CastRay(ray);
+                Vec3D pixelColor = PerPixel(ray);
                 // Convert and set pixel on screen
                 Vec3D pixelColorRGB = ConvertToRGB(pixelColor);
                 SetPixelColor(x, y, pixelColorRGB);
@@ -116,7 +124,8 @@ bool RT::Scene::Render() {
             double xNorm = x * xFact - 0.5;
             double yNorm = y * yFact - 0.5;
             RT::Ray ray = camera_.GetRay(xNorm, yNorm);
-            Vec3D pixelColor = CastRay(ray);
+            std::cout << "x, y: " << x << ", " << y << std::endl;
+            Vec3D pixelColor = PerPixel(ray);
 
             Vec3D pixelRGBColor = ConvertToRGB(pixelColor);
             SetPixelColor(x, y, pixelRGBColor);
@@ -146,7 +155,7 @@ void RT::Scene::Display() {
     SDL_RenderCopy(pRenderer_, pTexture_, nullptr, nullptr);
 }
 
-Vec3D RT::Scene::CastRay(RT::Ray &ray) {
+Vec3D RT::Scene::PerPixel(RT::Ray &ray) {
     std::shared_ptr<RT::Object> pObject = nullptr;
     Vec3D pixelColor = Utils::EMPTY_COLOR;
     for (int i = 0; i < Utils::BOUNCES; ++i){
@@ -160,24 +169,27 @@ Vec3D RT::Scene::CastRay(RT::Ray &ray) {
 
             Vec3D rayStart = ray.GetStartPoint();
             Vec3D rayDir = ray.GetDirection();
-            Vec3D newRayStart = rayStart + hitDist * rayDir + hitNormal * 0.001;
+            Vec3D newRayStart = rayStart + hitDist * rayDir + hitNormal * 0.1;
+
             RT::Ray shadow_ray(newRayStart, newRayStart - light_.GetDirection());
 
             if (RayTrace(u2, v2, hitDist2, hitNormal2, pObject2, shadow_ray)){
-                hitColor = Vec3D{0., 0., 0.};
-//                hitColor = CalculateHitColor(pObject, hitDist, hitNormal, u, v, rayDir);
+                hitColor = CalculateHitColor(pObject, hitDist, hitNormal, u, v, rayDir) * 0.5;
             } else{
                 hitColor = CalculateHitColor(pObject, hitDist, hitNormal, u, v, rayDir);
             }
-
             pixelColor = pixelColor + hitColor;
-            pixelColor = pixelColor * 4;
 
             rayStart = rayStart + hitDist * rayDir + hitNormal * 0.001;
             ray.Reflect(hitNormal, rayStart);
+
+        } else{
+            pixelColor = pixelColor + Vec3D{0.6, 0.7, 0.9};
         }
+        pixelColor = pixelColor * 9;
+
     }
-    pixelColor = pixelColor / 20.;
+    pixelColor = pixelColor / 819;
 
     return pixelColor;
 }
@@ -206,8 +218,8 @@ void RT::Scene::SetPixelColor(size_t x, size_t y, Vec3D &pixelColor) {
 bool RT::Scene::RayTrace(double &closestU, double &closestV, double &closestHitDist, Vec3D &closestHitNormal,
                          std::shared_ptr<RT::Object> &pClosestObject, RT::Ray &ray) {
     for (const auto pObject : pObjectList_){
-        RT::Payload payload = ray.RayIntersect(pObject);
-        if (payload.hitDist < closestHitDist){
+        RT::HitPayload payload = ray.RayIntersect(pObject);
+        if (payload.hitDist < closestHitDist && payload.hitDist < 1e9){
             closestHitDist = payload.hitDist;
             closestU = payload.u;
             closestV = payload.v;
@@ -215,7 +227,7 @@ bool RT::Scene::RayTrace(double &closestU, double &closestV, double &closestHitD
             closestHitNormal = payload.hitNormal;
         }
     }
-    return pClosestObject != nullptr;
+    return closestHitDist != DBL_MAX;
 }
 
 

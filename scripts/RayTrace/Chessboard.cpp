@@ -17,17 +17,30 @@ RT::Chessboard::Chessboard(const Vector<double, DIMS_3D> &bottomLeft) {
             auto pTriangle2 = std::make_shared<RT::Triangle>(pointA2, pointB2, pointC2);
 
             if (int(i + j) % 2 == 1){
-                pTriangle1->SetColor(Vec3D{0.5, .2 , 0.2});
-                pTriangle2->SetColor(Vec3D{0.5, .2 , 0.2});
+                pTriangle1->SetColor(Utils::WHITE_BOARD_COLOR);
+                pTriangle2->SetColor(Utils::WHITE_BOARD_COLOR);
             } else{
-                pTriangle1->SetColor(Vec3D{1., 0.8 , .65});
-                pTriangle2->SetColor(Vec3D{1., 0.8 , .65});
+                pTriangle1->SetColor(Utils::BLACK_BOARD_COLOR);
+                pTriangle2->SetColor(Utils::BLACK_BOARD_COLOR);
             }
 
             triangleGrid_.push_back(pTriangle1);
             triangleGrid_.push_back(pTriangle2);
         }
     }
+    Vec3D pointA = Vec3D{8., -1., 8.};
+    Vec3D pointB = Vec3D{8., 0., 8.};
+    Vec3D pointC = Vec3D{0., 0., 8.};
+    auto pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetColor(Utils::BLACK_BOARD_COLOR);
+    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{0., 0., 8.};
+    pointB = Vec3D{0., -1., 8.};
+    pointC = Vec3D{8., -1., 8.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetColor(Utils::BLACK_BOARD_COLOR);
+    triangleGrid_.push_back(pTriangle);
 }
 
 std::vector<std::shared_ptr<RT::Object>> RT::Chessboard::GetObjectPointers() {

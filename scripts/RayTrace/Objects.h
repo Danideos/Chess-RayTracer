@@ -71,6 +71,7 @@ namespace RT{
         const std::vector<Vector<int, 3>>& GetTriangles() const;
         const std::vector<std::pair<Vec3D, Vec3D>>& GetEdges() const;
         const std::vector<Vec3D>& GetNormals() const;
+        const std::vector<Vec3D>& GetVertexNormals() const;
 
         virtual const RT::ObjectType GetType() const override;
         void SetCenter(const Vec3D &point) override;
@@ -88,6 +89,7 @@ namespace RT{
 
         // Precalculated params needed for intersection testing
         std::vector<Vec3D> normals_;
+        std::vector<Vec3D> vertexNormals_;
         std::vector<std::pair<Vec3D, Vec3D>> edges_; // only two edges needed for our intersection testing
     };
 

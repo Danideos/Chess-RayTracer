@@ -7,7 +7,7 @@
 #include <float.h>
 
 namespace RT{
-    struct Payload{ // Desired return params of ray intersection test
+    struct HitPayload{ // Desired return params of ray intersection test
         double u;
         double v;
         double hitDist = DBL_MAX;
@@ -28,11 +28,12 @@ namespace RT{
         const Vec3D GetDirection() const;
         const Vec3D GetReflected(Vec3D& reflectNormal) const;
 
-        RT::Payload RayIntersect(std::shared_ptr<RT::Object> pObject);
+        RT::HitPayload RayIntersect(std::shared_ptr<RT::Object> pObject);
 
-        RT::Payload RayTriangleIntersect(const Vec3D &pointA, const Vec3D &pointB, const Vec3D &pointC,
-                                         const Vec3D &edgeAB, const Vec3D &edgeAC, const Vec3D &hitNormal);
-        RT::Payload RayTriangleMeshIntersect(RT::TriangleMesh* pTriangleMesh);
+        RT::HitPayload RayTriangleIntersect(const Vec3D &pointA, const Vec3D &pointB, const Vec3D &pointC,
+                                         const Vec3D &edgeAB, const Vec3D &edgeAC,
+                                         const Vec3D &hitNormal1, const Vec3D &hitNormal2, const Vec3D &hitNormal3);
+        RT::HitPayload RayTriangleMeshIntersect(RT::TriangleMesh* pTriangleMesh);
         void Reflect(const Vec3D &reflectNormal, const Vec3D &rayStart);
     private:
         Vec3D startPoint_;
