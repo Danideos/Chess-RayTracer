@@ -7,7 +7,7 @@ set(GCC_COVERAGE_COMPILE_FLAGS -Ofast)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 
 # Must set the path to the main.cpp, for example: scripts/main.cpp if it is inside a folder
-file(GLOB SRC scripts/*.cpp scripts/RayTrace/*.cpp)
+file(GLOB SRC scripts/*.cpp scripts/RayTrace/*.cpp scripts/Random/*.cpp)
 add_executable(${PROJECT_NAME} ${SRC})
 
 # --- SDL2 SETUP ---

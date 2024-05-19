@@ -9,30 +9,29 @@
 #include <limits>
 
 namespace RT{
+
+    class Material;
+
     enum class ObjectType{
         BASE,
         TRIANGLE,
         TRIANGLE_MESH,
-        SPHERE, // not implemented yet
-        CHESSBOARD
+        SPHERE // not implemented yet
     };
 
     class Object{
     public:
         Object();
 
-        const double GetAlbedo() const;
-        const Vec3D GetColor() const;
-
         virtual const RT::ObjectType GetType() const;
         virtual void SetCenter(const Vec3D &point);
 
-        void SetAlbedo(double albedo);
-        void SetColor(const Vec3D &color);
+        void SetMaterial(std::shared_ptr<RT::Material> pMaterial) { pMaterial_ = pMaterial; }
+        std::shared_ptr<RT::Material> GetMaterial() { return pMaterial_; };
+        virtual std::pair<Vec3D, Vec3D> GetBoundingPoints() const;
 
     private:
-        Vec3D color_;
-        double albedo_;
+        std::shared_ptr<RT::Material> pMaterial_;
     };
 
     class Triangle : public Object{
@@ -48,6 +47,7 @@ namespace RT{
 
         virtual const RT::ObjectType GetType() const override;
         void SetCenter(const Vec3D &point) override;
+        virtual std::pair<Vec3D, Vec3D> GetBoundingPoints() const override;
 
     private:
         // Important to define points counterclockwise for cross product to return correct orientation
@@ -72,13 +72,18 @@ namespace RT{
         const std::vector<std::pair<Vec3D, Vec3D>>& GetEdges() const;
         const std::vector<Vec3D>& GetNormals() const;
         const std::vector<Vec3D>& GetVertexNormals() const;
+        void SetSmoothness(double smoothness) { smoothness_ = smoothness; };
+        double GetSmoothness() { return smoothness_; };
 
         virtual const RT::ObjectType GetType() const override;
+        virtual std::pair<Vec3D, Vec3D> GetBoundingPoints() const override;
         void SetCenter(const Vec3D &point) override;
         void Fit1x1(double xOffset, double zOffset);
 
     private:
         void updateEdgesAndNormals();
+
+        double smoothness_ = Utils::BASE_SMOOTHNESS;
 
         // Intersection testing first done on bounding volumes to save computation time
         std::vector<RT::Triangle*> boundingVolume_;
@@ -110,6 +115,7 @@ namespace RT{
         Vec3D direction_;
         double intensity_;
     };
+
 }
 
 #endif

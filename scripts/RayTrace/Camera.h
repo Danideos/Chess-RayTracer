@@ -17,7 +17,10 @@ namespace RT{
         void SetAspectRatio(double aspectRatio);
         void SetHorizontalScale(double horizontalScale);
 
-        Vec3D GetPos();
+        Vec3D GetPos() { return cameraPos_; }
+        Vec3D GetCenter() { return screenCenter_; }
+        Vec3D GetScreenU() { return screenU_; }
+        Vec3D GetScreenV() { return screenV_; }
 
         void CalculateParams();
 

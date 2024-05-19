@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <stdexcept>
 #include <math.h>
+#include <random>
 
 constexpr const int DIMS_3D = 3;
 #define Vec3D Vector<double, DIMS_3D>
@@ -41,11 +42,12 @@ public:
     friend std::istream& operator>>(std::istream& stream, Vec3D& vector);
 
     element dot(const Vector<element, n> &other) const;
-    element operator*(const Vector<element, n>& vector) const;
+    Vector<element, n> operator*(const Vector<element, n>& vector) const;
     Vector<element, n> cross(const Vector<element, n> &other) const;
     element getNorm();
     void normalize();
     Vector<element, n> normalized() const;
+    size_t size() const;
 
     void print(std::ostream& stream = std::cout) const;
 };
@@ -203,8 +205,8 @@ Vector<element, n> Vector<element, n>::operator-(const Vector<element, n>& vecto
 }
 
 template<typename element, std::size_t n>
-element Vector<element, n>::operator*(const Vector<element, n> &vector) const {
-    return dot(vector);
+Vector<element, n> Vector<element, n>::operator*(const Vector<element, n> &vector) const {
+    return Vec3D{entries[0] * vector[0], entries[1] * vector[1], entries[2] * vector[2]};
 }
 
 template<typename element, std::size_t n>
@@ -262,6 +264,11 @@ const bool Vector<element, n>::operator==(const Vector &other) const {
         result = result && (entries[i] == other[i]);
     }
     return result;
+}
+
+template<typename element, std::size_t n>
+size_t Vector<element, n>::size() const {
+    return n;
 }
 
 #endif

@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Log.h"
 #include "RayTrace/Scene.h"
+#include "Random/Random.h"
 
 App::App() {
     running_ = false;
@@ -9,6 +10,7 @@ App::App() {
 }
 
 int App::Execute() {
+
     running_ = true;
     if (!Init()) {
         return 1;
@@ -54,6 +56,9 @@ bool App::Init() {
 
 void App::Render() {
     // Currently the rendering happens only once during initialization
+    SDL_RenderClear(pRenderer_);
+    scene_.Display();
+    SDL_RenderPresent(pRenderer_);
 }
 
 void App::Loop() {

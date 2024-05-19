@@ -59,7 +59,3 @@ RT::Ray RT::Camera::GetRay(double xNorm, double yNorm) {
     RT::Ray ray(cameraPos_, screenPoint);
     return ray;
 }
-
-Vec3D RT::Camera::GetPos() {
-    return cameraPos_;
-}

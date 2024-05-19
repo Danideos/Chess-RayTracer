@@ -15,10 +15,16 @@
 #include "Camera.h"
 #include "Ray.h"
 #include "Objects.h"
+#include "Material.h"
+#include "BoundingBox.h"
+
 
 namespace RT{
     class Scene{
     private:
+        SDL_Texture *pTexture_;
+        SDL_Renderer *pRenderer_;
+
         RT::Camera camera_;
         std::vector<std::shared_ptr<RT::Object>> pObjectList_;
         RT::DistantLightSource light_;
@@ -30,18 +36,26 @@ namespace RT{
         size_t sceneWidth_;
         size_t sceneHeight_;
 
-        SDL_Texture *pTexture_;
-        SDL_Renderer *pRenderer_;
+        std::vector<RT::BoundingBox> boundingBoxes_;
+
+        bool rasterization_;
+        std::vector<std::shared_ptr<RT::Object>> rasterScreen_;
+
     private:
         uint32_t ConvertToInt32(double red, double green, double blue);
-        Vec3D CalculateHitColor(std::shared_ptr<RT::Object> pObject, double hitDist, Vec3D &hitNormal,
-                                double &u, double &v, Vec3D &rayDir);
+        Vec3D CalculateHitColor(RT::Ray &ray, int depth);
         void SetPixelColor(size_t x, size_t y, Vec3D &pixelColor);
         Vec3D ConvertToRGB(const Vec3D &color);
 
-        Vec3D PerPixel(RT::Ray &ray);
-        bool RayTrace(double &u, double& v, double &hitDist, Vec3D &hitNormal, std::shared_ptr<RT::Object> &pObject,
-                      RT::Ray &ray);
+        bool RayTrace(RT::Ray &ray, RT::HitPayload& payload);
+
+        void CalculateBoundingBoxes();
+
+        std::ofstream CreateBmpFile() const;
+        void WriteColor(Vec3D color, std::ofstream& image);
+
+        // Unfinished
+        void ForTriangleRasterization(Vec3D A, Vec3D B, Vec3D C, Vec3D normal, std::vector<double> &depthBuffer);
 
     public:
         Scene();

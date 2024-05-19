@@ -1,32 +1,22 @@
 #include "Objects.h"
+#include <float.h>
 
 // Base
 RT::Object::Object() {
-    color_ = Utils::BASE_COLOR;
-    albedo_ = Utils::BASE_ALBEDO;
-}
-
-const double RT::Object::GetAlbedo() const {
-    return albedo_;
-}
-
-const Vec3D RT::Object::GetColor() const {
-    return color_;
-}
-
-void RT::Object::SetAlbedo(double albedo) {
-    albedo_ = albedo;
-}
-
-void RT::Object::SetColor(const Vec3D &color) {
-    color_ = color;
+    pMaterial_ = nullptr;
 }
 
 const RT::ObjectType RT::Object::GetType() const {
     return RT::ObjectType::BASE;
 }
 
-void RT::Object::SetCenter(const Vec3D &point) {} // Base class skips implementation...
+// Base class skips implementation...
+void RT::Object::SetCenter(const Vec3D &point) {}
+
+std::pair<Vec3D, Vec3D > RT::Object::GetBoundingPoints() const {
+    return std::pair<Vec3D, Vec3D>(std::make_pair<Vec3D, Vec3D>(Vec3D{0., 0., 0.}, Vec3D{0., 0., 0.}));
+}
+
 
 // Triangle
 RT::Triangle::Triangle(const Vec3D &pointA, const Vec3D &pointB, const Vec3D &pointC)
@@ -80,6 +70,20 @@ void RT::Triangle::SetCenter(const Vec3D &point) {
     pointC_ = pointC_ - diff;
 }
 
+std::pair<Vec3D, Vec3D> RT::Triangle::GetBoundingPoints() const {
+    Vec3D minPoint = Vec3D{
+        std::min(std::min(pointA_[0], pointB_[0]), pointC_[0]),
+        std::min(std::min(pointA_[1], pointB_[1]), pointC_[1]),
+        std::min(std::min(pointA_[2], pointB_[2]), pointC_[2])
+    };
+    Vec3D maxPoint = Vec3D{
+        std::max(std::max(pointA_[0], pointB_[0]), pointC_[0]),
+        std::max(std::max(pointA_[1], pointB_[1]), pointC_[1]),
+        std::max(std::max(pointA_[2], pointB_[2]), pointC_[2])
+    };
+    return std::make_pair(minPoint, maxPoint);
+}
+
 
 // Light
 RT::DistantLightSource::DistantLightSource() {
@@ -119,9 +123,6 @@ RT::TriangleMesh::TriangleMesh(std::vector<Vec3D> &vertices, std::vector<Vector<
     triangles_ = triangles;
 
     updateEdgesAndNormals();
-
-    // Calculate bounding volume triangles
-    // - missing
 }
 
 size_t RT::TriangleMesh::GetTriangleNum() const {
@@ -150,7 +151,7 @@ const RT::ObjectType RT::TriangleMesh::GetType() const {
 
 void RT::TriangleMesh::SetCenter(const Vec3D &point) {
     Vec3D center{0., 0., 0.};
-    double minY;
+    double minY = DBL_MAX;
     for (auto& vertex : vertices_){
         minY = std::min(minY, vertex[1]);
     }
@@ -233,7 +234,7 @@ void RT::TriangleMesh::updateEdgesAndNormals() {
     }
     for (int i = 0; i < vertices_.size(); ++i) {
         if (facesCounter[i] > 0){
-            vertexNormals[i] = vertexNormals[i] / facesCounter[i];
+            vertexNormals[i] = (vertexNormals[i] / facesCounter[i]);
         } else{
             vertexNormals[i].normalize();
         }
@@ -243,6 +244,35 @@ void RT::TriangleMesh::updateEdgesAndNormals() {
 
 const std::vector<Vec3D > &RT::TriangleMesh::GetVertexNormals() const {
     return vertexNormals_;
+}
+
+std::pair<Vec3D, Vec3D > RT::TriangleMesh::GetBoundingPoints() const {
+    Vec3D pointA = vertices_[triangles_[0][0]];
+    Vec3D pointB = vertices_[triangles_[0][1]];
+    Vec3D pointC = vertices_[triangles_[0][2]];
+    Vec3D minPoint = Vec3D{
+            std::min(std::min(pointA[0], pointB[0]), pointC[0]),
+            std::min(std::min(pointA[1], pointB[1]), pointC[1]),
+            std::min(std::min(pointA[2], pointB[2]), pointC[2])
+    };
+    Vec3D maxPoint = Vec3D{
+            std::max(std::max(pointA[0], pointB[0]), pointC[0]),
+            std::max(std::max(pointA[1], pointB[1]), pointC[1]),
+            std::max(std::max(pointA[2], pointB[2]), pointC[2])
+    };
+    for (auto triangle : triangles_){
+        minPoint = Vec3D{
+                std::min(std::min(std::min(vertices_[triangle[0]][0], vertices_[triangle[0]][0]), vertices_[triangle[0]][0]), minPoint[0]),
+                std::min(std::min(std::min(vertices_[triangle[1]][1], vertices_[triangle[1]][1]), vertices_[triangle[1]][1]), minPoint[1]),
+                std::min(std::min(std::min(vertices_[triangle[2]][2], vertices_[triangle[2]][2]), vertices_[triangle[2]][2]), minPoint[2])
+        };
+        maxPoint = Vec3D{
+                std::max(std::max(std::max(vertices_[triangle[0]][0], vertices_[triangle[0]][0]), vertices_[triangle[0]][0]), maxPoint[0]),
+                std::max(std::max(std::max(vertices_[triangle[1]][1], vertices_[triangle[1]][1]), vertices_[triangle[1]][1]), maxPoint[1]),
+                std::max(std::max(std::max(vertices_[triangle[2]][2], vertices_[triangle[2]][2]), vertices_[triangle[2]][2]), maxPoint[2])
+        };
+    }
+    return std::make_pair(minPoint, maxPoint);
 }
 
 
