@@ -2,7 +2,7 @@
 #include "Chessboard.h"
 
 RT::Scene::Scene() {
-    auto blue_material_metal = std::make_shared<RT::Metal>(Vec3D{0.6, 0.7, 0.9}, 0.0);
+    auto blue_material_metal = std::make_shared<RT::Metal>(Vec3D{1., 1., 0.}, 0.0);
     auto pink_material_metal = std::make_shared<RT::Metal>(Vec3D{1., 0.35, 1.}, 0.01);
 
     // Create base plane
@@ -12,7 +12,7 @@ RT::Scene::Scene() {
         pObjectList_.push_back(pObj);
     }
 
-    // Create metal mirrors for prettier scene
+//     Create metal mirrors for prettier scene
     auto plane = std::make_shared<RT::Triangle>(Vec3D{-1., -1., -1.}, Vec3D{9., -1., -1.}, Vec3D{9., 9., -1.});
     plane->SetMaterial(blue_material_metal);
     pObjectList_.push_back(plane);
@@ -29,21 +29,6 @@ RT::Scene::Scene() {
     CalculateBoundingBoxes();
 
     rasterization_ = false;
-//    Vec3D camCent = camera_.GetCenter();
-//    Vec3D screenU = camera_.GetScreenU();
-//    Vec3D screenV = camera_.GetScreenV();
-//    auto screen1 = std::make_shared<RT::Triangle>(
-//            camCent + 100. * (-screenU - screenV),
-//            camCent + 100. * (-screenU + screenV),
-//            camCent + 100. * (screenU + screenV)
-//            );
-//    rasterScreen_.push_back(screen1);
-//    auto screen2 = std::make_shared<RT::Triangle>(
-//            camCent + 100. * (screenU - screenV),
-//            camCent + 100. * (screenU + screenV),
-//            camCent + 100. * (-screenU - screenV)
-//            );
-//    rasterScreen_.push_back(screen2);
 }
 
 void RT::Scene::Initialize(size_t width, size_t height, SDL_Renderer *pRend){
@@ -251,7 +236,9 @@ bool RT::Scene::RayTrace(RT::Ray &ray, RT::HitPayload& payload) {
     for (const auto& [hitDist, pBox] : orderedBoxes){
         for (const auto pObject : pBox->GetObjectList()){
             ray.RayIntersect(pObject, payload);
+
         }
+//        if (payload.hitDist != DBL_MAX) return true;
     }
     return payload.hitDist != DBL_MAX;
 }
@@ -364,5 +351,3 @@ void RT::Scene::ForTriangleRasterization(Vec3D A, Vec3D B, Vec3D C, Vec3D normal
         }
     }
 }
-
-

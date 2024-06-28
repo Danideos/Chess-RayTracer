@@ -1,6 +1,5 @@
 #include "Chessboard.h"
 #include "Material.h"
-#include "../Utilities/MaterialConfig.h"
 
 RT::Chessboard::Chessboard(const Vec3D &bottomLeft) {
     // Create chess board objects
@@ -31,6 +30,7 @@ RT::Chessboard::Chessboard(const Vec3D &bottomLeft) {
             triangleGrid_.push_back(pTriangle2);
         }
     }
+
 
     // Create chess pieces objects
     for (int i = 0; i < 8; ++i){
@@ -77,48 +77,50 @@ RT::Chessboard::Chessboard(const Vec3D &bottomLeft) {
     pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
     pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
     triangleGrid_.push_back(pTriangle);
-//
-//    Vec3D pointA = Vec3D{8., -1., 8.};
-//    Vec3D pointB = Vec3D{8., 0., 8.};
-//    Vec3D pointC = Vec3D{0., 0., 8.};
-//    auto pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
-//    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
-//    triangleGrid_.push_back(pTriangle);
-//
-//    pointA = Vec3D{0., 0., 8.};
-//    pointB = Vec3D{0., -1., 8.};
-//    pointC = Vec3D{8., -1., 8.};
-//    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
-//    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
-//    triangleGrid_.push_back(pTriangle);
-//
-//    Vec3D pointA = Vec3D{8., -1., 8.};
-//    Vec3D pointB = Vec3D{8., 0., 8.};
-//    Vec3D pointC = Vec3D{0., 0., 8.};
-//    auto pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
-//    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
-//    triangleGrid_.push_back(pTriangle);
-//
-//    pointA = Vec3D{0., 0., 8.};
-//    pointB = Vec3D{0., -1., 8.};
-//    pointC = Vec3D{8., -1., 8.};
-//    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
-//    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
-//    triangleGrid_.push_back(pTriangle);
-//
-//    Vec3D pointA = Vec3D{8., -1., 8.};
-//    Vec3D pointB = Vec3D{8., 0., 8.};
-//    Vec3D pointC = Vec3D{0., 0., 8.};
-//    auto pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
-//    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
-//    triangleGrid_.push_back(pTriangle);
-//
-//    pointA = Vec3D{0., 0., 8.};
-//    pointB = Vec3D{0., -1., 8.};
-//    pointC = Vec3D{8., -1., 8.};
-//    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
-//    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
-//    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{8., 0., 8.};
+    pointB = Vec3D{8., -1., 0.};
+    pointC = Vec3D{8., 0., 0.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
+    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{0., 0., 8.};
+    pointB = Vec3D{0., -1., 8.};
+    pointC = Vec3D{0., 0., 0.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
+    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{0., -1., 8.};
+    pointB = Vec3D{0., -1., 0.};
+    pointC = Vec3D{0., 0., 0.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
+    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{0., -1., 0.};
+    pointB = Vec3D{8., -1., 0.};
+    pointC = Vec3D{8., 0., 0.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
+    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{8., 0., 0.};
+    pointB = Vec3D{0., 0., 0.};
+    pointC = Vec3D{0., -1., 0.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
+    triangleGrid_.push_back(pTriangle);
+
+    pointA = Vec3D{8., 0., 8.};
+    pointB = Vec3D{8., -1., 8.};
+    pointC = Vec3D{8., -1., 0.};
+    pTriangle = std::make_shared<RT::Triangle>(pointA, pointB, pointC);
+    pTriangle->SetMaterial(Config::BLACK_BOARD_MATERIAL);
+    triangleGrid_.push_back(pTriangle);
+
+
 }
 
 std::vector<std::shared_ptr<RT::Object>> RT::Chessboard::GetObjectPointers() {

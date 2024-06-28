@@ -1,2 +1,0 @@
-# Run in "scripts" directory in powershell to find number of code lines. Target circa ~3000/4000 (not goal, just a small indicator)
-(dir -Include "*.h", "*.cpp" -Recurse -Name) | foreach{(GC $_).Count} | Measure-Object -Sum

@@ -6,7 +6,9 @@
 class Rand {
 public:
     static void Initialize();
+    /// \brief Returns a random double in the interval [0,1]
     static double RandomDouble();
+    /// \brief Returns a random normalized vector
     static Vec3D RandomUnitVector();
 
 private:

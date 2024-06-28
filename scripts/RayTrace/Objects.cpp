@@ -11,11 +11,13 @@ const RT::ObjectType RT::Object::GetType() const {
 }
 
 // Base class skips implementation...
-void RT::Object::SetCenter(const Vec3D &point) {}
+void RT::Object::SetCenter(const Vec3D point) {}
 
 std::pair<Vec3D, Vec3D > RT::Object::GetBoundingPoints() const {
     return std::pair<Vec3D, Vec3D>(std::make_pair<Vec3D, Vec3D>(Vec3D{0., 0., 0.}, Vec3D{0., 0., 0.}));
 }
+
+void RT::Object::SetPos(const Vec3D point) {}
 
 
 // Triangle
@@ -58,7 +60,7 @@ const RT::ObjectType RT::Triangle::GetType() const {
     return RT::ObjectType::TRIANGLE;
 }
 
-void RT::Triangle::SetCenter(const Vec3D &point) {
+void RT::Triangle::SetCenter(const Vec3D point) {
     Vec3D bottomLeftCorner{
         std::min(std::min(pointA_[0], pointB_[0]), pointC_[0]),
         std::min(std::min(pointA_[1], pointB_[1]), pointC_[1]),
@@ -149,7 +151,7 @@ const RT::ObjectType RT::TriangleMesh::GetType() const {
     return RT::ObjectType::TRIANGLE_MESH;
 }
 
-void RT::TriangleMesh::SetCenter(const Vec3D &point) {
+void RT::TriangleMesh::SetCenter(const Vec3D point) {
     Vec3D center{0., 0., 0.};
     double minY = DBL_MAX;
     for (auto& vertex : vertices_){
@@ -273,6 +275,51 @@ std::pair<Vec3D, Vec3D > RT::TriangleMesh::GetBoundingPoints() const {
         };
     }
     return std::make_pair(minPoint, maxPoint);
+}
+
+void RT::TriangleMesh::SetPos(const Vec3D point) {
+    Vec3D leftCorner = vertices_[0];
+    for (auto& vertex : vertices_){
+        leftCorner[0] = std::min(leftCorner[0], vertex[0]);
+        leftCorner[1] = std::min(leftCorner[1], vertex[1]);
+        leftCorner[2] = std::min(leftCorner[2], vertex[2]);
+    }
+    Vec3D diff = leftCorner - point;
+    for (auto& vertex : vertices_){
+        vertex = vertex - diff;
+    }
+}
+
+void RT::TriangleMesh::Rotate(double angle) {
+    Vec3D center{0., 0., 0.};
+    double minY = DBL_MAX;
+    for (auto& vertex : vertices_){
+        minY = std::min(minY, vertex[1]);
+    }
+    int amount = 0;
+    for (auto& vertex : vertices_){
+        if (minY == vertex[1]){
+            center = center + vertex;
+            amount++;
+        }
+    }
+    center = center / amount;
+    double angleRad = angle * (M_PI / 180.);
+    for (auto& vertex : vertices_){
+        RotatePointAroundCenter(vertex, center, angleRad);
+    }
+    updateEdgesAndNormals();
+}
+
+void RT::TriangleMesh::RotatePointAroundCenter(Vec3D& point, Vec3D center, double angle) {
+    double s = sin(angle);
+    double c = cos(angle);
+    point[0] -= center[0];
+    point[2] -= center[2];
+    double newX = point[0] * c - point[2] * s;
+    double newY = point[0] * s + point[2] * c;
+    point[0] = newX + center[0];
+    point[2] = newY + center[2];
 }
 
 

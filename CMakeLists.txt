@@ -22,3 +22,4 @@ target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} mingw32 ole32 oleaut32 imm
 
 # Assuming you have a target named 'your_target_name'
 target_compile_options(${PROJECT_NAME} PRIVATE -O2)
+

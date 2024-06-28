@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "../Random/Random.h"
 
-bool RT::Lambertian::Scatter(const RT::Ray &ray, const RT::HitPayload &hitPayload, RT::ScatterPayload &scatterPayload, int depth) const {
+bool RT::Lambertian:: Scatter(const RT::Ray &ray, const RT::HitPayload &hitPayload, RT::ScatterPayload &scatterPayload, int depth) const {
     scatterPayload.damping = albedo_;
     scatterPayload.pPDF = std::make_shared<RT::CosinePDF>(hitPayload.hitNormal);
     scatterPayload.skipPDF = false;

@@ -1,3 +1,8 @@
+/**
+ * @file Objects.h
+ * @brief Defines various object classes used for ray tracing.
+ */
+
 #ifndef MAIN_CPP_OBJECT_H
 #define MAIN_CPP_OBJECT_H
 
@@ -11,29 +16,44 @@
 namespace RT{
 
     class Material;
-
+    /**
+     * @enum ObjectType
+     * @brief Enum representing the type of an object.
+     */
     enum class ObjectType{
         BASE,
         TRIANGLE,
         TRIANGLE_MESH,
         SPHERE // not implemented yet
     };
-
+    /**
+     * @class Object
+     * @brief Abstract base class for all objects in the ray tracing environment.
+     */
     class Object{
     public:
         Object();
 
         virtual const RT::ObjectType GetType() const;
-        virtual void SetCenter(const Vec3D &point);
+        virtual void SetCenter(const Vec3D point);
+        virtual void SetPos(const Vec3D point);
 
         void SetMaterial(std::shared_ptr<RT::Material> pMaterial) { pMaterial_ = pMaterial; }
         std::shared_ptr<RT::Material> GetMaterial() { return pMaterial_; };
+        /**
+         * @brief Gets the bounding points of the object.
+         * @return A pair of vectors representing the bounding points.
+         */
         virtual std::pair<Vec3D, Vec3D> GetBoundingPoints() const;
 
     private:
         std::shared_ptr<RT::Material> pMaterial_;
     };
 
+    /**
+     * @class Triangle
+     * @brief Represents a triangular object in the ray tracing environment.
+     */
     class Triangle : public Object{
     public:
         Triangle(const Vec3D &pointA, const Vec3D &pointB, const Vec3D &pointC);
@@ -46,7 +66,7 @@ namespace RT{
         const Vec3D& GetNormal() const;
 
         virtual const RT::ObjectType GetType() const override;
-        void SetCenter(const Vec3D &point) override;
+        void SetCenter(const Vec3D point) override;
         virtual std::pair<Vec3D, Vec3D> GetBoundingPoints() const override;
 
     private:
@@ -60,7 +80,10 @@ namespace RT{
         Vec3D edgeAC_;
         Vec3D edgeBC_;
     };
-
+    /**
+     * @class TriangleMesh
+     * @brief Represents a mesh of triangles for effective representation in the ray tracing environment.
+     */
     class TriangleMesh : public Object{
     public:
         TriangleMesh(std::vector<Vec3D> &vertices, std::vector<Vector<int, 3>> &triangles);
@@ -77,11 +100,22 @@ namespace RT{
 
         virtual const RT::ObjectType GetType() const override;
         virtual std::pair<Vec3D, Vec3D> GetBoundingPoints() const override;
-        void SetCenter(const Vec3D &point) override;
+        /// \brief Set center coordinates of the object
+        void SetCenter(const Vec3D point) override;
+        /// \brief Set bottom left coordinates of the object(min x, min y, min z)
+        void SetPos(const Vec3D point) override;
+        /// \brief Rescale the object to fit 1x1 square(x and z coordinates) with x and y multiplier to 1x1 square
         void Fit1x1(double xOffset, double zOffset);
+        /// \brief Recalculate edges and normals after changing object
+        void updateEdgesAndNormals();
+        /**
+         * @brief Rotates the mesh around its center.
+         * @param angle The angle in degrees to rotate the mesh.
+         */
+        void Rotate(double angle);
 
     private:
-        void updateEdgesAndNormals();
+        void RotatePointAroundCenter(Vec3D& point, Vec3D center, double angleInRadians);
 
         double smoothness_ = Utils::BASE_SMOOTHNESS;
 
@@ -97,7 +131,10 @@ namespace RT{
         std::vector<Vec3D> vertexNormals_;
         std::vector<std::pair<Vec3D, Vec3D>> edges_; // only two edges needed for our intersection testing
     };
-
+    /**
+     * @class DistantLightSource
+     * @brief Represents a distant light source in the ray tracing environment.
+     */
     class DistantLightSource{
     public:
         DistantLightSource();

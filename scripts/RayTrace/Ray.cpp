@@ -48,8 +48,8 @@ void RT::Ray::RayIntersect(std::shared_ptr<RT::Object> pObject, RT::HitPayload& 
         RT::Triangle* pTriangle = static_cast<RT::Triangle*>(pObject.get());
         Vec3D triangleNormal = pTriangle->GetNormal();
         newPayload = RayTriangleIntersect(pTriangle->GetPointA(), pTriangle->GetPointB(), pTriangle->GetPointC(),
-                                                         pTriangle->GetEdgeAB(), pTriangle->GetEdgeAC(), triangleNormal, 0.,
-                                                         triangleNormal, triangleNormal, triangleNormal);
+                                          pTriangle->GetEdgeAB(), pTriangle->GetEdgeAC(), triangleNormal, 0.,
+                                          triangleNormal, triangleNormal, triangleNormal);
 
     } else if (objType == RT::ObjectType::TRIANGLE_MESH){
         RT::TriangleMesh* pTriangleMesh = static_cast<RT::TriangleMesh*>(pObject.get());
@@ -115,8 +115,8 @@ RT::HitPayload RT::Ray::RayTriangleIntersect(const Vec3D &pointA, const Vec3D &p
     payload.hitDist = hitDist;
     payload.hitNormal = (
             1 - payload.u - payload.v) * (hitNormal1 * smoothness + faceNormal * (1. - smoothness)) +
-                    payload.u * (hitNormal2 * smoothness + faceNormal * (1. - smoothness)) +
-                    payload.v * (hitNormal3 * smoothness + faceNormal * (1. - smoothness));
+            payload.u * (hitNormal2 * smoothness + faceNormal * (1. - smoothness)) +
+            payload.v * (hitNormal3 * smoothness + faceNormal * (1. - smoothness));
     payload.hitPoint = startPoint_ + direction_ * hitDist;
     payload.frontFace = det > 0;
 

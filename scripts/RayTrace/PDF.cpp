@@ -28,6 +28,5 @@ double RT::CosinePDF::Value(Vec3D direction) const {
 }
 
 Vec3D RT::CosinePDF::Generate() const {
-
     return Local(RandomCosineDirection());
 }

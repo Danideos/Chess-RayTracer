@@ -16,14 +16,14 @@ constexpr const char SMALL_DELIMITER = '/';
 
 class ObjLoader{
 public:
-    static std::shared_ptr<RT::TriangleMesh> loadTriangleMeshObj(const std::string& filename);
+    static std::shared_ptr<RT::TriangleMesh> loadTriangleMeshObj(const std::string& filename, bool flipVertices = false);
 
 private:
 };
 
 
-inline std::shared_ptr<RT::TriangleMesh> ObjLoader::loadTriangleMeshObj(const std::string &filename) {
-    std::ifstream file(filename);
+inline std::shared_ptr<RT::TriangleMesh> ObjLoader::loadTriangleMeshObj(const std::string &filename, bool flipVertices) {
+    std::ifstream file("../objects/" + filename);
     if (!file.is_open()) {
         throw std::runtime_error("Error opening file: " + filename);
     }
@@ -59,7 +59,16 @@ inline std::shared_ptr<RT::TriangleMesh> ObjLoader::loadTriangleMeshObj(const st
             }
         }
     }
+    if (flipVertices) {
+        for (auto &triangle: triangles) {
+            int a = triangle[0];
+            int b = triangle[1];
+            triangle[0] = b;
+            triangle[1] = a;
+        }
+    }
     std::shared_ptr<RT::TriangleMesh> triangleMesh = std::make_shared<RT::TriangleMesh>(RT::TriangleMesh(vertices, triangles));
+    triangleMesh->updateEdgesAndNormals();
     return triangleMesh;
 }
 
