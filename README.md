@@ -18,6 +18,8 @@
 
 * Disclaimer: RayTracing can be computationaly quite expensive, so even on the lowest settings expect a few seconds before getting results. Because of that I have implemented simple multithreading, which needs to be turned off manually("Utils.h", read further...)
   
+  ![alt text](https://github.com/Danideos/Chess-RayTracer/blob/main/OutputImages/100Ray_50Bounces_5Figures.png)
+  
   # User manual
   
   Program is an implementation of a Ray Tracer on a 3D scene, which has chessboard and figures.
@@ -150,7 +152,5 @@ I didn't manage to finish the rasterization process with camera movement as I sp
 I used a template for this project to easily set it up in Clion, I leave the TEMPLATE_README.md for info. This is the template git repositary: [GitHub - llanillo/clion-cmake-sdl2-template: Template for Clion/Cmake and SDL2 Setup](https://github.com/llanillo/clion-cmake-sdl2-template)
 
 Just for info, for some reason SDL2 library blocks `std::cout << ...` from appearing in terminal.
-
-
 
 
