@@ -11,7 +11,7 @@ namespace Utils{
     /// \brief Amount of ray bounces in the scene
     constexpr const int BOUNCES = 20;
     /// \brief Squared amount of rays shot into scene for each pixel
-    constexpr const int SQRT_SAMPLES = 1;
+    constexpr const int SQRT_SAMPLES = 3;
     /**
      * @}
      */
@@ -42,7 +42,7 @@ namespace Utils{
      * @{ \name Camera params
      */
     /// \brief Default camera position
-    const Vec3D DEFAULT_CAMERA_POS{8., 16., 16.};
+    const Vec3D DEFAULT_CAMERA_POS{8., 8., 16.};
     /// \brief Point at which the camera looks at, center of the screen
     const Vec3D DEFAULT_CAMERA_LOOKAT{4., 0., 4.};
     /// \brief Fixates the up vector of the screen

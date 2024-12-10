@@ -1,0 +1,13 @@
+# ninja log v6
+37	961	7378627490330788	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/PDF.cpp.obj	cbc63fa2a424ff17
+12	977	7378627490077244	CMakeFiles/RealChess-RayTracer.dir/scripts/Random/Random.cpp.obj	3962a7bf890a9880
+18	1163	7378627490141528	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/Camera.cpp.obj	d35e1c210fdf0723
+41	1301	7378627490380797	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/Ray.cpp.obj	6dd23dc2cddc6548
+26	1386	7378627490230123	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/Material.cpp.obj	7ef25fa99e221901
+15	1387	7378627490107217	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/BoundingBox.cpp.obj	ea5fbc322999840e
+31	1625	7378627490280793	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/Objects.cpp.obj	e583cc2a8023e7dc
+4	1889	7378627490006302	CMakeFiles/RealChess-RayTracer.dir/scripts/App.cpp.obj	f968bb37b4def012
+9	1909	7378627490052072	CMakeFiles/RealChess-RayTracer.dir/scripts/Main.cpp.obj	d6d349a637d8f7b7
+22	2155	7378627490188347	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/Chessboard.cpp.obj	e9cf4e725aca5e13
+46	3031	7378627490430812	CMakeFiles/RealChess-RayTracer.dir/scripts/RayTrace/Scene.cpp.obj	9f5aa7597ab11867
+3031	3611	7378627520278192	RealChess-RayTracer.exe	a3cd1e0fadbfdca9
